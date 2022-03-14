@@ -1,0 +1,89 @@
+﻿
+Write-Host -f Green "=====//START SCRIPT//====="
+
+#====================================//Define variable//==================="
+#change the value of 2 variables below:
+$source = 'https://github.com/DavidFerreira21/Office-365-Licensing-Tool/archive/refs/head/main.zip'
+
+$destination = 'D:\Temp\main.zip'
+
+function downloadPackage {
+
+    #$credential = Get-Credential #Use this if need authentication
+    
+    Write-Host "=====//Check Destination file ...."
+    if (-not (Test-Path -LiteralPath $destination)) {
+    
+        Write-host -f Green  "`nProcess download .....`n"
+    }
+    else {
+         Write-host -f Yellow  "`n'$destination' file already existed!`n"
+         Write-host -f Green  "`nProcess delete and download .....`n"
+         Remove-Item $destination
+         
+    }
+    try {
+        Invoke-WebRequest -Uri $source -OutFile $destination 
+        #Invoke-WebRequest -Uri $source -OutFile $destination -Credential $credential
+    }
+    catch {
+        Write-Error -Message "Unable to DOWNLOAD. Error was: $_" -ErrorAction stop
+        break
+    }
+}
+function extractPackage {
+    
+    Write-host -f Green  "=====//Process extract '$destination'...`n"
+    Expand-Archive -LiteralPath $destination -DestinationPath D:\Temp
+
+}
+ 
+ $DiskObjects = Get-WmiObject win32_logicaldisk -Filter "Drivetype=3"
+
+ foreach ($disk in $DiskObjects)
+ {
+    $Name           = $disk.DeviceID
+    $Capacity       = [math]::Round($disk.Size / 1073741824, 2)
+    $FreeSpace      = [math]::Round($disk.FreeSpace / 1073741824, 2)
+    $FreePercentage = [math]::Round($disk.FreeSpace / $disk.size * 100, 1)
+    if ($Name -eq "C:") {
+
+        
+        Write-Host "Name: $Name"
+        Write-Host "Capacity (GB): $Capacity"
+        Write-Host "FreeSpace (GB): $FreeSpace"
+        Write-Host "FreePercentage (%): $FreePercentage"
+
+        if ($FreeSpace -gt 5) {
+            Write-Host -f Green "==> Disk C:\ is normal"
+        }
+        else {
+            Write-Host -f Yellow "==> Disk C:\ is not enough space"
+        }
+    }
+    else {
+        if ($Name -eq "D:") {
+  
+            Write-Host "Name: $Name"
+            Write-Host "Capacity (GB): $Capacity"
+            Write-Host "FreeSpace (GB): $FreeSpace"
+            Write-Host "FreePercentage (%): $FreePercentage"
+            if ($FreeSpace -gt 5) {
+                Write-Host -f Green "==> Disk D:\ is normal"
+                
+                #Call function download package
+                downloadPackage
+
+                #Call function Extract package
+                extractPackage
+
+            }
+            else {
+                Write-Host -f Yellow "==> Disk D:\ is not enough space"
+            }
+        }
+
+    }
+ }
+ 
+ Write-Host -f Green "=====//DONE SCRIPT//====="
