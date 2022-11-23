@@ -1,0 +1,1 @@
+ $AllProtocols = [System.Net.SecurityProtocolType]'Ssl2, Ssl3, Tls, Tls10, Tls11, Tls12, Tls13' 
