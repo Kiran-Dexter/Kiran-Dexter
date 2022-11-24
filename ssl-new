@@ -1,11 +1,4 @@
- $AllProtocols = [System.Net.SecurityProtocolType]'Ssl2, Ssl3, Tls, Tls10, Tls11, Tls12, Tls13' 
- $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12,Tls13'
- 
- 
- 
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'tls'
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'tls11'
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'tls12'
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'tls13'
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'ssl'
-[Enum]::GetNames([Net.SecurityProtocolType]) -contains 'ssl2'
+$secpasswd = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
+$yourcreds = New-Object System.Management.Automation.PSCredential ("username", $secpasswd)
+
+Start-BitsTransfer -DisplayName DMFweeklytrans -ProxyUsage AutoDetect -Source $source -Destination $destination -Authentication Basic -Credential $yourcreds -Asynchronous 
