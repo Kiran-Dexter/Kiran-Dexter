@@ -1,4 +1,1 @@
-$secpasswd = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
-$yourcreds = New-Object System.Management.Automation.PSCredential ("username", $secpasswd)
-
-Start-BitsTransfer -DisplayName DMFweeklytrans -ProxyUsage AutoDetect -Source $source -Destination $destination -Authentication Basic -Credential $yourcreds -Asynchronous 
+Start-BitsTransfer -Source $source -Destination $destination -Authentication Basic -Credential $yourcreds -Asynchronous 
